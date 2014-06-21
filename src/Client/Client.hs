@@ -274,18 +274,18 @@ numSkipObjs name = do
 
 -- | Анализ аргументов программы для определения полного пути к
 -- конфигурационному файлу и номера порта для соединения.
-parseArgs :: [String] -> IO (String, PortID)
+parseArgs :: [String] -> IO (String, String, PortID)
 parseArgs argv = case argv of
 
-  fn : p : _ -> case reads p of
-                      (pn, _) : _ -> return ( fn, PortNumber $ fromInteger pn )
+  fn : host : p : _ -> case reads p of
+                      (pn, _) : _ -> return ( fn, host, PortNumber $ fromInteger pn )
                       _           -> usage
   _            -> usage
 
  where
     usage = do
       pn <- getProgName
-      putStrLn ("Usage : "++ pn ++" PATH_CONFIGURATION_FILE PORT") >> exitWith ExitSuccess
+      putStrLn ("Usage : "++ pn ++" PATH_CONFIGURATION_FILE HOST PORT") >> exitWith ExitSuccess
 
 -- |
 createDirectoryIfMissing :: FilePath -> IO ()

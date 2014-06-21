@@ -40,7 +40,7 @@ main :: IO ()
 main = withSocketsDo $ do
   -- Из аргументов программы получаем полный путь к конфигурационному файлу
   -- и номер порта, к которому нужно подсоединиться.
-  (fn, port) <- getArgs >>= parseArgs
+  (fn, host, port) <- getArgs >>= parseArgs
 
   -- Считывание данных из фала конфигурации и файла, содержащего входные
   -- данные, то есть фотометрию звезд.
@@ -48,7 +48,7 @@ main = withSocketsDo $ do
   nos <- runParser fn $ inputFileParser
 
   -- Подсоединяемая к заданному порту и устанавливаем тип буферизации.
-  handle <- connectTo "localhost" port
+  handle <- connectTo host port
   hSetBuffering handle LineBuffering
 
   putStrLn "\nКлиент запущен и подключен к серверу."
@@ -68,7 +68,7 @@ main = withSocketsDo $ do
 
 -- |
 toObj :: [Float] -> (Point06d, SDSSxTWOMASS)
-toObj [teff,logg,mh,av,rv,th, _,_,x2,x3,x4,x5,x6,x7,x8,x9] = (p, o)
+toObj (teff:logg:mh:av:rv:th: _:_:x2:x3:x4:x5:x6:x7:x8:x9:_) = (p, o)
   where
     p = (teff,logg,mh,av,rv,th)
     o = SDSSxTWOMASS (x2,x3,x4,x5,x6, x7,x8,x9)
