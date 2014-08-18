@@ -20,6 +20,7 @@ module Data.PhotoModel
  , UGRIZ(..)
  , JHK(..)
  , FUVNUV(..)
+ , RIHα (..)
  , Lira(..)
  , Band(..)
  , Filter
@@ -64,6 +65,13 @@ data JHK = JHK
 data FUVNUV = FUVNUV
   { fuv_band :: Band PogsonZeroPoint
   , nuv_band :: Band PogsonZeroPoint
+  }
+
+-- Data type to describe of IPHAS bands.
+data RIHα = RIHα 
+  { r'_band :: Band PogsonZeroPoint
+  , i'_band :: Band PogsonZeroPoint
+  , hα_band :: Band PogsonZeroPoint
   }
 
 -- Data type to describe of Lira bands.

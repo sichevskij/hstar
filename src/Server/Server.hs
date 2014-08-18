@@ -54,8 +54,10 @@ reqHandler hIn = do
          ReqObj.OxGALEX o e -> Obj (o,e)
          ReqObj.OxSDSS o e -> Obj (o,e)
          ReqObj.OxTWOMASS o e -> Obj (o,e)
+         ReqObj.OxIPHAS o e -> Obj (o,e)
          ReqObj.OxGRIxTWOMASS o e -> Obj (o,e)
          ReqObj.OxGRIZxTWOMASS o e -> Obj (o,e)
+         ReqObj.OxIPHASxTWOMASS o e -> Obj (o,e)
          ReqObj.OxSDSSxTWOMASS o e -> Obj (o,e)
          ReqObj.OxNUVxSDSSxTWOMASS o e -> Obj (o,e)
 

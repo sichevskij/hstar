@@ -29,6 +29,7 @@ type Point07d = (Float, Float, Float, Float, Float, Float, Float)
 type Point08d = (Float, Float, Float, Float, Float, Float, Float, Float)
 type Point09d = (Float, Float, Float, Float, Float, Float, Float, Float, Float)
 type Point10d = (Float, Float, Float, Float, Float, Float, Float, Float, Float, Float)
+type Point13d = (Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float)
 
 
 instance Storable Point02d where
@@ -174,3 +175,37 @@ instance Storable Point10d where
         pokeByteOff ptr (7 * #size float) $ x7
         pokeByteOff ptr (8 * #size float) $ x8
         pokeByteOff ptr (9 * #size float) $ x9
+
+instance Storable Point13d where
+    sizeOf    _ = #size float [13]
+    alignment _ = alignment (undefined::CFloat)
+    peek ptr = do
+        x0  <- peekByteOff ptr (0)
+        x1  <- peekByteOff ptr (1  * #size float)
+        x2  <- peekByteOff ptr (2  * #size float)
+        x3  <- peekByteOff ptr (3  * #size float)
+        x4  <- peekByteOff ptr (4  * #size float)
+        x5  <- peekByteOff ptr (5  * #size float)
+        x6  <- peekByteOff ptr (6  * #size float)
+        x7  <- peekByteOff ptr (7  * #size float)
+        x8  <- peekByteOff ptr (8  * #size float)
+        x9  <- peekByteOff ptr (9  * #size float)
+        x10 <- peekByteOff ptr (10 * #size float)
+        x11 <- peekByteOff ptr (11 * #size float)
+        x12 <- peekByteOff ptr (12 * #size float)
+        return (x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12)
+
+    poke ptr (x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12) = do
+        pokeByteOff ptr (0)               $ x0
+        pokeByteOff ptr (1  * #size float) $ x1
+        pokeByteOff ptr (2  * #size float) $ x2
+        pokeByteOff ptr (3  * #size float) $ x3
+        pokeByteOff ptr (4  * #size float) $ x4
+        pokeByteOff ptr (5  * #size float) $ x5
+        pokeByteOff ptr (6  * #size float) $ x6
+        pokeByteOff ptr (7  * #size float) $ x7
+        pokeByteOff ptr (8  * #size float) $ x8
+        pokeByteOff ptr (9  * #size float) $ x9
+        pokeByteOff ptr (10 * #size float) $ x10
+        pokeByteOff ptr (11 * #size float) $ x11
+        pokeByteOff ptr (12 * #size float) $ x12

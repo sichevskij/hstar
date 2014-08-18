@@ -19,6 +19,7 @@ module Synth.Parser
   , galexParser
   , sdssParser
   , twomassParser
+  , iphasParser
   , liraParser
   , parseResponse
   , parseFluxATLAS9
@@ -36,7 +37,7 @@ import Data.Loader.Parser       ( get )
 import Data.Loader.Parser.Error ( SCPError(..) )
 import Data.Maybe               ( fromJust )
 import Data.MagnitudeSystem     ( VEGAmag(..), ABMag(..) )
-import Data.PhotoModel          ( PhotoModel(..), Band(..), UGRIZ(..), JHK(..), FUVNUV(..), Lira(..) )
+import Data.PhotoModel          ( PhotoModel(..), Band(..), UGRIZ(..), JHK(..), FUVNUV(..), RIHα(..), Lira(..) )
 import Data.ZeroPoint           ( AsinhZeroPoint(..), PogsonZeroPoint(..) )
 import Data.HList               ( (:::)(..), Null(..) )
 import System.FilePath          ( (</>) )
@@ -45,7 +46,7 @@ import Synth.Common             ( Spectrum, Teff(..), Logg(..), FeH(..) )
 import qualified Data.ByteString.Lazy.Char8 as LB
 import qualified Data.ByteString.Lex.Lazy.Double as LD
 
-data Bands = Bolometric | LIRA | GALEX | SDSS | TWOMASS | GALEXxSDSS | SDSSxTWOMASS | GALEXxSDSSxTWOMASS deriving (Read,Show)
+data Bands = Bolometric | LIRA | IPHAS | GALEX | SDSS | TWOMASS | GALEXxSDSS | SDSSxTWOMASS | GALEXxSDSSxTWOMASS deriving (Read,Show)
 
 type Model  = ( (Teff ::: Logg ::: FeH ::: Null), Spectrum )
 
@@ -120,6 +121,36 @@ twomassParser = do
         { j_band = Band filter_j (PogsonZeroPoint zp_flux_j zp_mag_j)
         , h_band = Band filter_h (PogsonZeroPoint zp_flux_h zp_mag_h)
         , k_band = Band filter_k (PogsonZeroPoint zp_flux_k zp_mag_k)
+        }
+    }
+
+-- Парсер для анализа секции
+iphasParser :: (MonadReader (ConfigParser, FilePath) m , MonadError SCPError m , MonadIO m) => m (PhotoModel VEGAmag RIHα)
+iphasParser = do
+
+  liftIO $ putStrLn "\nЧтение секции, описывающую обзор IPHAS...\n"
+
+  let sectionName = "PHOTOMODEL_IPHAS"
+
+  zp_flux_r  <- get sectionName "R_ZP_FLUX"
+  zp_flux_i  <- get sectionName "I_ZP_FLUX"
+  zp_flux_hα <- get sectionName "Hα_ZP_FLUX"
+
+
+  zp_mag_r  <- get sectionName "R_ZP_MAG"
+  zp_mag_i  <- get sectionName "I_ZP_MAG"
+  zp_mag_hα <- get sectionName "Hα_ZP_MAG"
+
+  filter_r  <- get sectionName "R_IPHAS"  >>= parseResponse
+  filter_i  <- get sectionName "I_IPHAS"  >>= parseResponse
+  filter_hα <- get sectionName "Hα_IPHAS" >>= parseResponse
+
+  return $ PhotoModel
+    { magSystem = VEGAmag
+    , bands = RIHα
+        { r'_band = Band filter_r  (PogsonZeroPoint zp_flux_r  zp_mag_r)
+        , i'_band = Band filter_i  (PogsonZeroPoint zp_flux_i  zp_mag_i)
+        , hα_band = Band filter_hα (PogsonZeroPoint zp_flux_hα zp_mag_hα)
         }
     }
 

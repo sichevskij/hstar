@@ -48,12 +48,12 @@ void create_kdtree(const char* filename, int kdtree_dim, int n, float points[])
     annClose();
 }
 
-int read_points( float out[][10], const char* filename)
+int read_points( float out[][13], const char* filename)
 {
    FILE* fin;
    timeval t1, t2;
    int rows;
-   float teff, logg, mh, av, rv, th, fuv,nuv, u,g,r,i,z, j,h,k;
+   float teff, logg, mh, av, rv, th, fuv,nuv, u,g,r,i,z, j,h,k, rr,ii, hh;
 
    gettimeofday(&t1, NULL);
 
@@ -82,19 +82,22 @@ int read_points( float out[][10], const char* filename)
 
        int sn;
 
-       sn = fscanf(fin,"%g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g" ,&teff, &logg, &mh, &av, &rv, &th, &fuv,&nuv, &u,&g,&r,&i,&z, &j,&h,&k);
+       sn = fscanf(fin,"%g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g" ,&teff, &logg, &mh, &av, &rv, &th, &fuv,&nuv, &u,&g,&r,&i,&z, &j,&h,&k, &rr,&ii, &hh);
 
-       if (sn == 16) {
-           out[n][0] = fuv;
-           out[n][1] = nuv;
-           out[n][2] = u;
-           out[n][3] = g;
-           out[n][4] = r;
-           out[n][5] = i;
-           out[n][6] = z;
-           out[n][7] = j;
-           out[n][8] = h;
-           out[n][9] = k;
+       if (sn == 19) {
+           out[n][0]  = fuv;
+           out[n][1]  = nuv;
+           out[n][2]  = u;
+           out[n][3]  = g;
+           out[n][4]  = r;
+           out[n][5]  = i;
+           out[n][6]  = z;
+           out[n][7]  = j;
+           out[n][8]  = h;
+           out[n][9]  = k;
+           out[n][10] = rr;
+           out[n][11] = ii;
+           out[n][12] = hh;
        }
 
        if (sn == EOF) {

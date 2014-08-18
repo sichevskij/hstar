@@ -22,16 +22,17 @@ import Control.Applicative  ( (<$>) )
 import Control.Monad        ( forM_ )
 import Control.Monad.Reader ( ReaderT, liftIO )
 import Data.HList           ( (:::)(..), Null(..), ToDouble(..), hAppend, hToList, hMap )
---import System.Random        ( randomRIO )
+import System.Random        ( randomRIO )
 import Synth.Common         ( Spectrum, Teff(..), Logg(..), FeH(..), Av(..), Rv(..), Theta(..), quad, hc )
 import Synth.Context        ( Context )
 import Synth.Parser         ( Bands(..) )
 import Synth.Photometry     ( mag )
-import Synth.Survey hiding  ( Survey, GALEX, SDSS, TWOMASS, LIRA )
+import Synth.Survey hiding  ( Survey, GALEX, SDSS, TWOMASS, IPHAS, LIRA )
 import Synth.Survey.LIRA    ()
 import Synth.Survey.GALEX   ()
 import Synth.Survey.SDSS    ()
 import Synth.Survey.TWOMASS ()
+import Synth.Survey.IPHAS   ()
 import Text.Printf          ( printf )
 
 import qualified Synth.Survey         as S
@@ -53,10 +54,10 @@ process (surv,fp) ms = do
 
      -- определяем список со значениями полного поглощения (Av) и отношения
      -- полного к селективному (Rv).
---{--
+{--
      let ars = [ (Av av ::: Rv rv ::: Null) | av <- [0,0.125..2], rv <-[2,2.25..6] ]
 --}
-{--
+--{--
      ars <- liftIO $ do
 
        av <- randomRIO (0,2) 
@@ -72,14 +73,15 @@ process (surv,fp) ms = do
        rsed <- sed `redden` ar
 
        -- определяем угловой размер звезды в стерадианах.
---{--
+{--
        let ths = (\ m -> 10**(-0.4 * m)) <$> [4.5,4.6 .. 10]
 --}
 {--
        th <- liftIO $ randomRIO (1e-2,1e-5)  
 --}
 
-       forM_ ths $ \ th -> do      
+--       forM_ ths $ \ th -> do      
+       forM_ [1] $ \ th -> do      
 
          -- вычисляем блеск, используя покрасненный спектр
          let cs = mf ( ( \(w, f) -> (w, f*th) ) <$> rsed )
@@ -123,6 +125,9 @@ magnitudes surv = do
      TWOMASS -> do 
                   m <- mag :: Factory ( Spectrum -> J S.TWOMASS ::: H S.TWOMASS ::: K S.TWOMASS ::: Null)
                   return $ toList m
+     IPHAS   -> do 
+                  m <- mag :: Factory ( Spectrum -> R S.IPHAS ::: I S.IPHAS ::: Hα S.IPHAS ::: Null)
+                  return $ toList m
 
      GALEXxSDSS   -> do
                   m <- mag :: Factory ( Spectrum ->  FUV S.GALEX ::: NUV S.GALEX ::: U S.SDSS ::: G S.SDSS ::: R S.SDSS ::: I S.SDSS ::: Z S.SDSS ::: Null)
@@ -156,11 +161,12 @@ printTableBody fp p cs = do
 printTableHead :: FilePath -> Bands -> IO ()
 printTableHead fp surv = do
 
-   let hd = "Teff\tlogg\t[M/H]\tAv\tRv\tDim\t\t" ++ hb
+   let hd = "Teff\tlogg\t[M/H]\tAv\tRv\tTheta\t\t" ++ hb
        hb = case surv of
               GALEX              -> "FUV\tNUV\n"
               SDSS               -> "u\t\tg\t\tr\t\ti\t\tz\n"
               TWOMASS            -> "J\t\tH\t\tK\n"
+              IPHAS              -> "R\t\tI\t\tHα\n"
               GALEXxSDSS         -> "FUV\tNUV\tu\t\tg\t\tr\t\ti\t\tz\n"
               SDSSxTWOMASS       -> "u\t\tg\t\tr\t\ti\t\tz\t\tJ\t\tH\t\tK\n"
               GALEXxSDSSxTWOMASS -> "FUV\tNUV\t\tu\t\tg\t\tr\t\ti\t\tz\t\tJ\t\tH\t\tK\n"

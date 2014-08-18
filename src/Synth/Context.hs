@@ -24,15 +24,16 @@ import Control.Monad.Error      ( MonadError )
 import Control.Monad.Reader     ( MonadReader, MonadIO, liftIO )
 import Data.ConfigFile          ( ConfigParser(..) )
 import Data.MagnitudeSystem     ( VEGAmag, ABMag )
-import Data.PhotoModel          ( PhotoModel, UGRIZ, JHK, FUVNUV, Lira )
+import Data.PhotoModel          ( PhotoModel, UGRIZ, JHK, FUVNUV, RIHα, Lira )
 import Data.Loader.Parser.Error ( SCPError(..) )
-import Synth.Parser             ( Model, Bands(..), optParser, galexParser, sdssParser, twomassParser, liraParser, modelParser )
+import Synth.Parser             ( Model, Bands(..), optParser, galexParser, sdssParser, twomassParser, iphasParser, liraParser, modelParser )
 
 
 data Context  = Context
   { galex   :: PhotoModel ABMag   FUVNUV
   , sdss    :: PhotoModel ABMag   UGRIZ
   , twomass :: PhotoModel VEGAmag JHK
+  , iphas   :: PhotoModel VEGAmag RIHα
   , lira    :: PhotoModel VEGAmag Lira
   }
 
@@ -57,10 +58,12 @@ contextParser = do
   phGALEX <- galexParser
   phSDSS  <- sdssParser
   ph2MASS <- twomassParser
+  phIPHAS <- iphasParser
 
   return $ Context
     { lira = phLIRA
     , galex = phGALEX
     , sdss = phSDSS
     , twomass = ph2MASS
+    , iphas = phIPHAS
     }

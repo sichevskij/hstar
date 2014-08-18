@@ -228,6 +228,19 @@ lift10 :: (a1->b1) -> (a2->b2) -> (a3->b3) -> (a4->b4) -> (a5->b5) -> (a6->b6) -
       -> (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) -> (b1,b2,b3,b4,b5,b6,b7,b8,b9,b10)
 lift10 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) = (f1 a1,f2 a2,f3 a3,f4 a4,f5 a5,f6 a6,f7 a7,f8 a8,f9 a9,f10 a10)
 
+lift13 :: (a1->b1) -> (a2->b2) -> (a3->b3) -> (a4->b4) -> (a5->b5) -> (a6->b6) -> (a7->b7) -> (a8->b8) -> (a9->b9) -> (a10->b10) -> (a11->b11) -> (a12->b12) -> (a13->b13)
+      -> (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13) -> (b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13)
+lift13 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13) = (f1 a1,f2 a2,f3 a3,f4 a4,f5 a5,f6 a6,f7 a7,f8 a8,f9 a9, f10 a10, f11 a11, f12 a12, f13 a13)
+
+instance (Num a1, Num a2, Num a3, Num a4, Num a5, Num a6, Num a7, Num a8, Num a9, Num a10, Num a11, Num a12, Num a13) => Num (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13) where
+  fromInteger n = (fromInteger n, fromInteger n, fromInteger n, fromInteger n, fromInteger n,fromInteger n, fromInteger n, fromInteger n, fromInteger n, fromInteger n, fromInteger n, fromInteger n, fromInteger n)
+  (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13) + (b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13) = (a1+b1,a2+b2,a3+b3,a4+b4,a5+b5,a6+b6,a7+b7,a8+b8,a9+b9,a10+b10,a11+b11,a12+b12,a13+b13)
+  (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13) - (b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13) = (a1-b1,a2-b2,a3-b3,a4-b4,a5-b5,a6-b6,a7-b7,a8-b8,a9-b9,a10-b10,a11-b11,a12-b12,a13-b13)
+  (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13) * (b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13) = (a1*b1,a2*b2,a3*b3,a4*b4,a5*b5,a6*b6,a7*b7,a8*b8,a9*b9,a10*b10,a11*b11,a12*b12,a13*b13)
+  negate = lift13 negate negate negate negate negate negate negate negate negate negate negate negate negate
+  abs    = lift13 abs abs abs abs abs abs abs abs abs abs abs abs abs
+  signum = lift13 signum signum signum signum signum signum signum signum signum signum signum signum signum
+
 instance (Num a1, Num a2, Num a3, Num a4, Num a5, Num a6, Num a7, Num a8, Num a9, Num a10) => Num (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) where
   fromInteger n = (fromInteger n, fromInteger n, fromInteger n, fromInteger n, fromInteger n,fromInteger n, fromInteger n, fromInteger n, fromInteger n, fromInteger n)
   (a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) + (b1,b2,b3,b4,b5,b6,b7,b8,b9,b10) = (a1+b1,a2+b2,a3+b3,a4+b4,a5+b5,a6+b6,a7+b7,a8+b8,a9+b9,a10+b10)

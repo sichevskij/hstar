@@ -18,15 +18,17 @@ module Server.Request
    where
 
 import Data.Point 
-import Data.Object ( GALEX(..), SDSS(..), TWOMASS(..), SDSSxTWOMASS(..), GRIxTWOMASS(..), GRIZxTWOMASS(..), NUVxSDSSxTWOMASS(..) )
+import Data.Object ( GALEX(..), SDSS(..), TWOMASS(..), IPHAS(..), SDSSxTWOMASS(..), IPHASxTWOMASS(..), GRIxTWOMASS(..), GRIZxTWOMASS(..), NUVxSDSSxTWOMASS(..) )
 
 
 data Object
   = OxGALEX            GALEX		Point02d
   | OxSDSS             SDSS		Point05d
   | OxTWOMASS          TWOMASS		Point03d
+  | OxIPHAS            IPHAS		Point03d
   | OxGRIxTWOMASS      GRIxTWOMASS	Point06d
   | OxGRIZxTWOMASS     GRIZxTWOMASS	Point07d
+  | OxIPHASxTWOMASS    IPHASxTWOMASS	Point06d
   | OxSDSSxTWOMASS     SDSSxTWOMASS	Point08d
   | OxNUVxSDSSxTWOMASS NUVxSDSSxTWOMASS	Point09d
   deriving (Show, Read)

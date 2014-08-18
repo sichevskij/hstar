@@ -29,7 +29,7 @@ module Server.Command.ANN
 
 import Control.Applicative  ( (<$>) )
 import Control.Monad.Reader ( ReaderT,  MonadIO, liftIO, asks )
-import Data.Object          ( Object(..), GALEX(..), SDSS(..), TWOMASS(..), SDSSxTWOMASS(..), GRIxTWOMASS(..), GRIZxTWOMASS(..), NUVxSDSSxTWOMASS(..) )
+import Data.Object          ( Object(..), GALEX(..), SDSS(..), IPHAS(..), TWOMASS(..), SDSSxTWOMASS(..), IPHASxTWOMASS(..), GRIxTWOMASS(..), GRIZxTWOMASS(..), NUVxSDSSxTWOMASS(..) )
 import Data.Time.Clock      ( getCurrentTime, utctDayTime )
 import Foreign              ( Ptr, newArray, mallocArray, peekArray )
 import Math.Proj hiding     ( proj )
@@ -89,8 +89,8 @@ class ( Proj o o, Show o ) => Obj o where
 
       stime <- liftIO $ getCurrentTime >>= return . utctDayTime
 
---     r <- search tree (toList <$> proj <$> os) 
-      r <- search mtree (toList <$> os) 
+      r <- search mtree (toList <$> proj <$> os) 
+--      r <- search mtree (toList <$> os) 
 
       etime <- liftIO $ getCurrentTime >>= return . utctDayTime
 
@@ -114,6 +114,12 @@ instance Obj SDSS where
 
   kdtree _ = kdtree_sdss
 
+instance Obj IPHAS where
+
+  toList (IPHAS (r,i,hα)) = [r,i,hα]
+
+  kdtree _ = kdtree_iphas
+
 instance Obj TWOMASS where
 
   toList (TWOMASS (j,h,k)) = [j,h,k]
@@ -125,6 +131,12 @@ instance Obj SDSSxTWOMASS where
   toList (SDSSxTWOMASS (u,g,r,i,z,j,h,k)) = [u,g,r,i,z,j,h,k]
 
   kdtree _ = kdtree_sdss_twomass
+
+instance Obj IPHASxTWOMASS where
+
+  toList (IPHASxTWOMASS (r,i,hα,j,h,k)) = [r,i,hα,j,h,k]
+
+  kdtree _ = kdtree_iphas_twomass
 
 instance Obj GRIxTWOMASS where
 

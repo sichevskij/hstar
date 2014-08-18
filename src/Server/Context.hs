@@ -48,10 +48,12 @@ data Tree = Tree
 data Context = Context
   { kdtree_galex :: Maybe (Ptr Tree)
   , kdtree_sdss  :: Maybe (Ptr Tree)
+  , kdtree_iphas :: Maybe (Ptr Tree)
   , kdtree_twomass :: Maybe (Ptr Tree)
   , kdtree_gri_twomass :: Maybe (Ptr Tree)
   , kdtree_griz_twomass :: Maybe (Ptr Tree)
   , kdtree_sdss_twomass :: Maybe (Ptr Tree)
+  , kdtree_iphas_twomass :: Maybe (Ptr Tree)
   , kdtree_nuv_sdss_twomass :: Maybe (Ptr Tree)
 --  , database   :: Ptr Point05d
   , serverName :: String
@@ -72,9 +74,11 @@ configParser = do
 --  db <- get "DATABASE" "DataFile" >>= parseDataFile
   galex <- get "DATAINDEX" "GALEX" >>= parseIndexFile
   sdss  <- get "DATAINDEX" "SDSS" >>= parseIndexFile
+  iphas  <- get "DATAINDEX" "IPHAS" >>= parseIndexFile
   twomass <- get "DATAINDEX" "TWOMASS" >>= parseIndexFile
   gri_twomass <- get "DATAINDEX" "GRIxTWOMASS" >>= parseIndexFile
   griz_twomass <- get "DATAINDEX" "GRIZxTWOMASS" >>= parseIndexFile
+  iphas_twomass <- get "DATAINDEX" "IPHASxTWOMASS" >>= parseIndexFile
   sdss_twomass <- get "DATAINDEX" "SDSSxTWOMASS" >>= parseIndexFile
   nuv_sdss_twomass <- get "DATAINDEX" "NUVxSDSSxTWOMASS" >>= parseIndexFile
 
@@ -89,9 +93,11 @@ configParser = do
 --                   , database = db
                    , kdtree_galex = galex
                    , kdtree_sdss = sdss
+                   , kdtree_iphas = iphas
                    , kdtree_twomass = twomass
                    , kdtree_gri_twomass = gri_twomass
                    , kdtree_griz_twomass = griz_twomass
+                   , kdtree_iphas_twomass = iphas_twomass
                    , kdtree_sdss_twomass = sdss_twomass
                    , kdtree_nuv_sdss_twomass = nuv_sdss_twomass
                    }

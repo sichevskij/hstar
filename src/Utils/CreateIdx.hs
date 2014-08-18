@@ -21,7 +21,7 @@ module Main where
 import Control.Applicative  ( (<$>) )
 import Control.Monad        ( forM_ )
 --import Data.Maybe           ( fromJust )
-import Data.Point           ( Point10d )
+import Data.Point           ( Point13d )
 import Data.Time.Clock      ( getCurrentTime, utctDayTime )
 import Foreign
 import Foreign.C.String     ( CString, newCString )
@@ -41,14 +41,14 @@ import qualified Math.Proj as Proj
 type Number  = Int
 type TreeDim = Int
 
-data Flag = GALEX | SDSS | TWOMASS | SDSSxTWOMASS | GRIxTWOMASS | GRIZxTWOMASS | NUVxSDSSxTWOMASS | DIMxNUVxSDSSxTWOMASS deriving (Read, Show)
+data Flag = GALEX | SDSS | IPHAS | TWOMASS | SDSSxTWOMASS | IPHASxTWOMASS | GRIxTWOMASS | GRIZxTWOMASS | NUVxSDSSxTWOMASS | DIMxIPHASxTWOMASS |DIMxNUVxSDSSxTWOMASS deriving (Read, Show)
 
 -- import the foreign function as normal
 foreign import ccall "create_kdtree"
   createidx :: CString -> TreeDim -> Number -> (Ptr Float) -> IO ()
 
 foreign import ccall "read_points"
-  readdb :: Ptr Point10d -> CString -> IO Int
+  readdb :: Ptr Point13d -> CString -> IO Int
 
 main :: IO ()
 main = do
@@ -64,14 +64,17 @@ main = do
    forM_ fs $ \flg -> do
 
      let (dim,out,proj) = case flg of
-           GALEX   -> (3, "galex.idx", toList . (Proj.proj :: Point10d -> O.GALEX))
-           SDSS    -> (5, "sdss.idx",  toList . (Proj.proj :: Point10d -> O.SDSS))
-           TWOMASS -> (3, "2mass.idx", toList . (Proj.proj :: Point10d -> O.TWOMASS))
-           GRIxTWOMASS -> (6, "gri_2mass.idx", toList . (Proj.proj :: Point10d -> O.GRIxTWOMASS))
-           GRIZxTWOMASS -> (7, "griz_2mass.idx", toList . (Proj.proj :: Point10d -> O.GRIZxTWOMASS))
-           SDSSxTWOMASS -> (8, "sdss_2mass.idx", toList . (Proj.proj :: Point10d -> O.SDSSxTWOMASS))
-           NUVxSDSSxTWOMASS -> (9, "nuv_sdss_2mass.idx", toList . (Proj.proj :: Point10d -> O.NUVxSDSSxTWOMASS))
-           DIMxNUVxSDSSxTWOMASS -> (9, "dim_nuv_sdss_2mass.idx", toList . (\ (_,nuv, u,g,r,i,z, j,h,k) -> O.NUVxSDSSxTWOMASS (nuv, u,g,r,i,z, j,h,k)))
+           GALEX   -> (3, "galex.idx", toList . (Proj.proj :: Point13d -> O.GALEX))
+           SDSS    -> (5, "sdss.idx",  toList . (Proj.proj :: Point13d -> O.SDSS))
+           IPHAS   -> (3, "iphas.idx", toList . (Proj.proj :: Point13d -> O.IPHAS))
+           TWOMASS -> (3, "2mass.idx", toList . (Proj.proj :: Point13d -> O.TWOMASS))
+           GRIxTWOMASS -> (6, "gri_2mass.idx", toList . (Proj.proj :: Point13d -> O.GRIxTWOMASS))
+           GRIZxTWOMASS -> (7, "griz_2mass.idx", toList . (Proj.proj :: Point13d -> O.GRIZxTWOMASS))
+           SDSSxTWOMASS -> (8, "sdss_2mass.idx", toList . (Proj.proj :: Point13d -> O.SDSSxTWOMASS))
+           IPHASxTWOMASS -> (6, "iphas_2mass.idx", toList . (Proj.proj :: Point13d -> O.IPHASxTWOMASS))
+           NUVxSDSSxTWOMASS -> (9, "nuv_sdss_2mass.idx", toList . (Proj.proj :: Point13d -> O.NUVxSDSSxTWOMASS))
+           DIMxIPHASxTWOMASS -> (6, "dim_iphas_2mass.idx", toList . (\ (_,_, _,_,_,_,_, j,h,k, r,i,hα) -> O.IPHASxTWOMASS (j,h,k, r,i,hα)))
+           DIMxNUVxSDSSxTWOMASS -> (9, "dim_nuv_sdss_2mass.idx", toList . (\ (_,nuv, u,g,r,i,z, j,h,k, _,_,_) -> O.NUVxSDSSxTWOMASS (nuv, u,g,r,i,z, j,h,k)))
 
 
      putStrLn ("\nСоздается индекс для " ++ (show flg) ++ ": " ++ out ++ "...")
@@ -111,9 +114,9 @@ parse argv = case argv of
  where
     usage = do
       pn <- getProgName
-      putStrLn ("Usage : "++ pn ++" DATA_FILE [GALEX|SDSS|TWOMASS|GRIxTWOMASS|GRIZxTWOMASS|SDSSxTWOMASS|NUVxSDSSxTWOMASS]") >> exitWith ExitSuccess
+      putStrLn ("Usage : "++ pn ++" DATA_FILE [GALEX|SDSS|IPHAS|TWOMASS|IPHASxTWOMASS|SDSSxTWOMASS|NUVxSDSSxTWOMASS]") >> exitWith ExitSuccess
 
-load :: FilePath -> IO [Point10d]
+load :: FilePath -> IO [Point13d]
 load fn = do
 
    stime <- getCurrentTime >>= return . utctDayTime
